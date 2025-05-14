@@ -1,0 +1,31 @@
+{
+  "files": {
+    "main.css": "./static/css/main.376ebe1a.css",
+    "main.js": "./static/js/main.6019cc40.js",
+    "static/js/453.fe49c76c.chunk.js": "./static/js/453.fe49c76c.chunk.js",
+    "static/media/hero_banner_image_-_kuncie_scholarship_management_-_1920x900pt.png": "./static/media/hero_banner_image_-_kuncie_scholarship_management_-_1920x900pt.832f5839d9a0bc7c7bb5.png",
+    "static/media/National-Overseas-Scholarship-image.png": "./static/media/National-Overseas-Scholarship-image.410828a27f4e65495fda.png",
+    "static/media/about.jpg": "./static/media/about.20041ff454de306b64ed.jpg",
+    "static/media/bootstrap-icons.woff?": "./static/media/bootstrap-icons.39795c0b4513de014cf8.woff",
+    "static/media/logoUnklab.png": "./static/media/logoUnklab.8dedbdfe0330b200de0a.png",
+    "static/media/bootstrap-icons.woff2?": "./static/media/bootstrap-icons.b7bcc075b395c14ce8c2.woff2",
+    "static/media/logoUk1.png": "./static/media/logoUk1.1e5075a975c87654ccbb.png",
+    "static/media/KIP.png": "./static/media/KIP.925f2db8a8c0956a57cb.png",
+    "static/media/features.png": "./static/media/features.7fbc4dc790395faa5f44.png",
+    "static/media/services.jpg": "./static/media/services.86282c87094a231b6e87.jpg",
+    "static/media/alt-features.png": "./static/media/alt-features.76c8e5363f7636e47749.png",
+    "static/media/values-2.png": "./static/media/values-2.b55a44f9e403dcab6f04.png",
+    "static/media/hero-img.png": "./static/media/hero-img.14dc8f7a4d4b3edb0402.png",
+    "static/media/values-1.png": "./static/media/values-1.006c8f97bfa409ea7f42.png",
+    "static/media/values-3.png": "./static/media/values-3.ecfe7a9ca47c4b3de984.png",
+    "index.html": "./index.html",
+    "static/media/team-shape.svg": "./static/media/team-shape.e26361c94cfb4a70b998.svg",
+    "main.376ebe1a.css.map": "./static/css/main.376ebe1a.css.map",
+    "main.6019cc40.js.map": "./static/js/main.6019cc40.js.map",
+    "453.fe49c76c.chunk.js.map": "./static/js/453.fe49c76c.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.376ebe1a.css",
+    "static/js/main.6019cc40.js"
+  ]
+}
