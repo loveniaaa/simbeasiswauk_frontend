@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col } from 'react-bootstrap';
-import StatCard from '../components/StatCard';
 import AdminLayout from '../components/AdminLayout';
 import axios from 'axios';
 import "./dashboard-admin.css";

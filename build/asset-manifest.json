@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "./static/css/main.376ebe1a.css",
-    "main.js": "./static/js/main.6019cc40.js",
+    "main.js": "./static/js/main.69020ed3.js",
     "static/js/453.fe49c76c.chunk.js": "./static/js/453.fe49c76c.chunk.js",
     "static/media/hero_banner_image_-_kuncie_scholarship_management_-_1920x900pt.png": "./static/media/hero_banner_image_-_kuncie_scholarship_management_-_1920x900pt.832f5839d9a0bc7c7bb5.png",
     "static/media/National-Overseas-Scholarship-image.png": "./static/media/National-Overseas-Scholarship-image.410828a27f4e65495fda.png",
@@ -21,11 +21,11 @@
     "index.html": "./index.html",
     "static/media/team-shape.svg": "./static/media/team-shape.e26361c94cfb4a70b998.svg",
     "main.376ebe1a.css.map": "./static/css/main.376ebe1a.css.map",
-    "main.6019cc40.js.map": "./static/js/main.6019cc40.js.map",
+    "main.69020ed3.js.map": "./static/js/main.69020ed3.js.map",
     "453.fe49c76c.chunk.js.map": "./static/js/453.fe49c76c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.376ebe1a.css",
-    "static/js/main.6019cc40.js"
+    "static/js/main.69020ed3.js"
   ]
 }

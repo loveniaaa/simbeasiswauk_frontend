@@ -98,7 +98,7 @@ export default function Content() {
                 {scholarshipData.document_completion_status === false && (
                   <div className="mt-3">
                     <Link
-                      to="/mahasiswa/perbaiki-dokumen"
+                      to="/mahasiswa/dokumen"
                       className="btn btn-outline-warning"
                     >
                       Perbaiki Dokumen

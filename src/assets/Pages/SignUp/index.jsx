@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styles from "./signup.module.css";
 import { LogoUK, ScholarshipLogo } from "../../img";
 import InputDesign from "../../components/TextInput";
-import InputOption from "../../components/inputOption";
 import { Button } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";

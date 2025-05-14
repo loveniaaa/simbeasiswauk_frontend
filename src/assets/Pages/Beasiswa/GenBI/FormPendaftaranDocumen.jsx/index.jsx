@@ -61,15 +61,22 @@ const FormPendaftaranDocumentGenBI = () => {
   // If the form submission is successful, show a success notification
   if (success) {
     return (
-      <div className="success-container">
-        <h3>Dokumen berhasil diunggah!</h3>
-        <p>Pendaftaran Anda berhasil. Silakan klik tombol di bawah untuk kembali ke homepage.</p>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate("/")} // Redirect to homepage
-        >
-          Kembali ke Homepage
-        </button>
+      <div className="container d-flex justify-content-center align-items-center min-vh-100">
+        <div className="card shadow-lg p-4 text-center animate__animated animate__fadeInUp" style={{ maxWidth: "500px" }}>
+          <div className="text-success mb-3">
+            <i className="bi bi-check-circle-fill" style={{ fontSize: "3rem" }}></i>
+          </div>
+          <h3 className="fw-bold text-primary">Berhasil</h3>
+          <p className="text-muted">
+            Dokumen pendaftaran Anda telah berhasil disimpan. Klik tombol di bawah untuk kembali ke halaman dashboard.
+          </p>
+          <button
+            className="btn btn-primary mt-3"
+            onClick={() => navigate("/mahasiswa/dashboard")}
+          >
+            Lanjutkan ke Pendaftaran Dokumen
+          </button>
+        </div>
       </div>
     );
   }

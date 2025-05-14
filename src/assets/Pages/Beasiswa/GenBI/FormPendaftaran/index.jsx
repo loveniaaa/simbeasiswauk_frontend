@@ -9,7 +9,6 @@ function FormPendaftaranGenBI() {
   const [lastName, setLastName] = useState("");
   const [nim, setNim] = useState("");
   const [noRegistration, setNoRegistration] = useState("");
-  const [scholarshipType, setScholarshipType] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [highSchoolName, setHighSchoolName] = useState("");
@@ -58,7 +57,7 @@ function FormPendaftaranGenBI() {
       first_name: firstName,
       last_name: lastName,
       nomor_registrasi: noRegistration,
-      scholarship_type: "GenBI", // ⛔ ini sudah cukup, tidak perlu dua kali
+      scholarship_type: "GenBI", 
       address_line_1: addressLine1,
       address_line_2: addressLine2,
       high_school_name: highSchoolName,
@@ -101,15 +100,22 @@ function FormPendaftaranGenBI() {
   // If the form submission is successful, show a success notification
   if (success) {
     return (
-      <div className="success-container">
-        <h3>Pendaftaran berhasil!</h3>
-        <p>Data pendaftaran Anda telah berhasil disimpan. Klik tombol di bawah untuk melanjutkan ke tahap berikutnya.</p>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate("/beasiswa/genbi/form-pendaftaran/document")} // Navigate to the document upload page
-        >
-          Lanjutkan ke Pendaftaran Dokumen
-        </button>
+      <div className="container d-flex justify-content-center align-items-center min-vh-100">
+        <div className="card shadow-lg p-4 text-center animate__animated animate__fadeInUp" style={{ maxWidth: "500px" }}>
+          <div className="text-success mb-3">
+            <i className="bi bi-check-circle-fill" style={{ fontSize: "3rem" }}></i>
+          </div>
+          <h3 className="fw-bold text-primary">Pendaftaran Berhasil!</h3>
+          <p className="text-muted">
+            Data pendaftaran Anda telah berhasil disimpan. Klik tombol di bawah untuk melanjutkan ke tahap berikutnya.
+          </p>
+          <button
+            className="btn btn-primary mt-3"
+            onClick={() => navigate("/beasiswa/genbi/form-pendaftaran/document")}
+          >
+            Lanjutkan ke Pendaftaran Dokumen
+          </button>
+        </div>
       </div>
     );
   }
@@ -134,8 +140,8 @@ function FormPendaftaranGenBI() {
                 options={majors}
               />
 
-              <FormInput label="Alamat" placeholder="Type here" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} />
-              <FormInput placeholder="Type here" value={addressLine2} onChange={(e) => setAddressLine2(e.target.value)} />
+              <FormInput label="Alamat" placeholder="Jl, desa, RT / RW" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} />
+              <FormInput placeholder="Kecamatan, Kabupaten/Kota, Provinsi" value={addressLine2} onChange={(e) => setAddressLine2(e.target.value)} />
 
               <FormInput label="Asal Sekolah" placeholder="Type here" value={highSchoolName} onChange={(e) => setHighSchoolName(e.target.value)} />
               <FormInput label="Nama Ayah" placeholder="Type here" value={fatherName} onChange={(e) => setFatherName(e.target.value)} />

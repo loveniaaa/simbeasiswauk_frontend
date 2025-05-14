@@ -27,6 +27,7 @@ export default function DocumentValidation() {
   const [verifications, setVerifications] = useState({});
   const [notes, setNotes] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
+  const [scholarshipUuid, setScholarshipUuid] = useState(null);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -69,7 +70,24 @@ export default function DocumentValidation() {
       }
     };
 
-    fetchDocuments();
+    const fetchScholarshipUuid = async () => {
+      try {
+        const response = await apiClient.get(`/scholarship/detail?userUuid=${uploadedBy}`);
+        const result = response.data?.output_schema?.result;
+        if (result?.uuid) {
+          setScholarshipUuid(result.uuid); // UUID beasiswa
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data beasiswa:", error);
+      }
+    };
+
+    const fetchAll = async () => {
+      await fetchDocuments();
+      await fetchScholarshipUuid();
+    };
+
+    if (uploadedBy) fetchAll();
   }, [uploadedBy]);
 
   const handleVerificationChange = (category, value) => {
@@ -102,11 +120,14 @@ export default function DocumentValidation() {
     try {
       const isAllVerified = Object.values(verifications).every((v) => v === true);
 
-      if (isAllVerified) {
-        await apiClient.patch(`/document/completion-status?uploadedBy=${uploadedBy}&isComplete=true`);
-        alert("Dokumen lengkap dan status beasiswa telah diperbarui.");
+      if (!scholarshipUuid) {
+        alert("UUID beasiswa tidak ditemukan.");
+        return;
+      }
 
-        // ✅ Redirect ke halaman DataPendaftar
+      if (isAllVerified) {
+        await apiClient.patch(`/document/completion-status?uploadedBy=${scholarshipUuid}&isComplete=true`);
+        alert("Dokumen lengkap dan status beasiswa telah diperbarui.");
         navigate("/bidang/datapendaftar");
       } else {
         alert("Dokumen belum lengkap atau belum tervalidasi.");
@@ -128,81 +149,87 @@ export default function DocumentValidation() {
 
   return (
     <section className="mt-0">
+      {loading && <div className="text-center py-4">Memuat data...</div>}
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fs-4 fw-bold m-0">Cek Dokumen</h2>
-        <div className="d-flex gap-2">
-          <span>Status</span>
-          <span>:</span>
-          <span className={allComplete && Object.values(verifications).every((v) => v === true) ? "text-success" : "text-danger"}>
-            {allComplete && Object.values(verifications).every((v) => v === true)
-              ? "Dokumen Valid dan Lengkap"
-              : "Belum Valid atau Tidak Lengkap"}
-          </span>
-        </div>
-      </div>
 
-      <div className="list-group border-0">
-        {documentList.map((doc, idx) => (
-          <div key={idx} className="list-group-item border-0 bg-transparent mb-3">
-            <div className="d-flex align-items-center gap-3 mb-2">
-              <span className="fw-medium">{doc}</span>
-              <span className="mx-2">:</span>
-              {documents[doc] ? (
-                <button
-                  className="btn btn-sm btn-outline-success"
-                  onClick={() => previewDocument(documents[doc]?.uuid)}
-                >
-                  Lihat
-                </button>
-              ) : (
-                <span className="text-muted">Tidak ada File</span>
-              )}
-
-              {verifications[doc] === true && <span className="badge bg-success">Valid</span>}
-              {verifications[doc] === false && <span className="badge bg-danger">Tidak Valid</span>}
-              {verifications[doc] === null && <span className="badge bg-secondary">Belum Dicek</span>}
+      {!loading && (
+        <>
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h2 className="fs-4 fw-bold m-0">Cek Dokumen</h2>
+            <div className="d-flex gap-2">
+              <span>Status</span>
+              <span>:</span>
+              <span className={allComplete && Object.values(verifications).every((v) => v === true) ? "text-success" : "text-danger"}>
+                {allComplete && Object.values(verifications).every((v) => v === true)
+                  ? "Dokumen Valid dan Lengkap"
+                  : "Belum Valid atau Tidak Lengkap"}
+              </span>
             </div>
-
-            {documents[doc] && (
-              <div className="ps-4">
-                <div className="mb-2">
-                  <label className="form-label mb-1">Catatan:</label>
-                  <textarea
-                    rows="2"
-                    className="form-control"
-                    value={notes[doc] || ""}
-                    onChange={(e) => handleNoteChange(doc, e.target.value)}
-                  />
-                </div>
-                <div className="mb-3 d-flex align-items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={verifications[doc] === true}
-                    disabled={verifications[doc] === true}
-                    onChange={(e) => handleVerificationChange(doc, e.target.checked)}
-                  />
-                  <button
-                    className="btn btn-sm btn-primary"
-                    onClick={() => handleVerifySubmit(doc)}
-                    disabled={verifications[doc] === null || verifications[doc] === true}
-                  >
-                    Simpan Verifikasi
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
-        ))}
-      </div>
 
-      <button
-        className="btn btn-success rounded-pill px-5 mt-5"
-        disabled={!allComplete}
-        onClick={handleDocumentCompletionStatus}
-      >
-        {allComplete ? "Selesai" : "Lengkapi Dulu"}
-      </button>
+          <div className="list-group border-0">
+            {documentList.map((doc, idx) => (
+              <div key={idx} className="list-group-item border-0 bg-transparent mb-3">
+                <div className="d-flex align-items-center gap-3 mb-2">
+                  <span className="fw-medium">{doc}</span>
+                  <span className="mx-2">:</span>
+                  {documents[doc] ? (
+                    <button
+                      className="btn btn-sm btn-outline-success"
+                      onClick={() => previewDocument(documents[doc]?.uuid)}
+                    >
+                      Lihat
+                    </button>
+                  ) : (
+                    <span className="text-muted">Tidak ada File</span>
+                  )}
+
+                  {verifications[doc] === true && <span className="badge bg-success">Valid</span>}
+                  {verifications[doc] === false && <span className="badge bg-danger">Tidak Valid</span>}
+                  {verifications[doc] === null && <span className="badge bg-secondary">Belum Dicek</span>}
+                </div>
+
+                {documents[doc] && (
+                  <div className="ps-4">
+                    <div className="mb-2">
+                      <label className="form-label mb-1">Catatan:</label>
+                      <textarea
+                        rows="2"
+                        className="form-control"
+                        value={notes[doc] || ""}
+                        onChange={(e) => handleNoteChange(doc, e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3 d-flex align-items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={verifications[doc] === true}
+                        disabled={verifications[doc] === true}
+                        onChange={(e) => handleVerificationChange(doc, e.target.checked)}
+                      />
+                      <button
+                        className="btn btn-sm btn-primary"
+                        onClick={() => handleVerifySubmit(doc)}
+                        disabled={verifications[doc] === null || verifications[doc] === true}
+                      >
+                        Simpan Verifikasi
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <button
+            className="btn btn-success rounded-pill px-5 mt-5"
+            disabled={!allComplete || !scholarshipUuid}
+            onClick={handleDocumentCompletionStatus}
+          >
+            {allComplete ? "Selesai" : "Lengkapi Dulu"}
+          </button>
+        </>
+      )}
     </section>
   );
 }

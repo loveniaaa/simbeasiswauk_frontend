@@ -3,7 +3,6 @@ import React from "react";
 
 import TableSection from "./TableSection";
 import StatusLegend from "./StatusLegend";
-import { FilterSection } from "./FilterSection";
 
 function ContentArea() {
   return (
