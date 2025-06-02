@@ -30,7 +30,7 @@ const SignUp = () => {
         };        
 
         try {
-            const response = await axios.post("https://simbeasiswauk.site:9900/sms-mgmt/auth/sign-up", payload);
+            const response = await axios.post("http://localhost:9900/sms-mgmt/auth/sign-up", payload);
             console.log("Success:", response.data);
             navigate("/signup/succes");
         } catch (error) {
@@ -45,7 +45,7 @@ const SignUp = () => {
                 <div className={`${styles.kiri} col-md-6`}>
                     <div className={`${styles.glassBox} p-0 g-0 min-vh-100 flex-column align-items-center p-4 z-2 position-absolute`}>
                         <img src={LogoUK} className="justify-content-center ms-4 mt-5" style={{width: 250}} />   
-                        <h1 className={`${styles.textScholarship} text-start ms-4 mt-5`}>Scholarship Management System</h1>
+                        <h1 className={`${styles.textScholarship} text-start ms-4 mt-5`}>Sistem Informasi Manajemen Beasiswa</h1>
                     </div>
                     <img src={ScholarshipLogo} className={`${styles.bgImage}`} />
                 </div>
@@ -55,12 +55,12 @@ const SignUp = () => {
                         <h1 className={`${styles.TitleKanan} text-black`}>Buat akun anda</h1>
                         
                         <div className="mb-2 mt-2">
-                            <span className="text-black">First Name</span>
-                            <InputDesign type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                            <span className="text-black">Nama Depan</span>
+                            <InputDesign type="text" placeholder="Nama Depan" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                         </div>
 
                         <div className="mb-2 mt-2">
-                            <span className="text-black">Last Name</span>
+                            <span className="text-black">Nama Belakang</span>
                             <InputDesign placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                         </div>
 
@@ -70,8 +70,8 @@ const SignUp = () => {
                         </div>
 
                         <div className="mb-2 mt-2">
-                            <span className="text-black">Phone Number</span>
-                            <InputDesign placeholder="Phone Number" value={phone_number} onChange={(e) => setPhoneNumber(e.target.value)} />
+                            <span className="text-black">Nomor Telfon</span>
+                            <InputDesign placeholder="Nomor Telfon" value={phone_number} onChange={(e) => setPhoneNumber(e.target.value)} />
                         </div>
 
                         <div className="mb-2 mt-2">

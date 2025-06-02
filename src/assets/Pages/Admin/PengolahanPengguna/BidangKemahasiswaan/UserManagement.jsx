@@ -35,7 +35,7 @@ const UserManagement = () => {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const token = storedUser?.token;
 
-      const response = await axios.get("https://simbeasiswauk.site:9900/sms-mgmt/master-user/get", {
+      const response = await axios.get("http://localhost:9900/sms-mgmt/master-user/get", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -74,7 +74,7 @@ const UserManagement = () => {
         status: true,
       };
 
-      await axios.post("https://simbeasiswauk.site:9900/sms-mgmt/master-user/create", payload, {
+      await axios.post("http://localhost:9900/sms-mgmt/master-user/create", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -107,7 +107,7 @@ const UserManagement = () => {
         role_id: "02",
       };
 
-      await axios.put("https://simbeasiswauk.site:9900/sms-mgmt/master-user/update", payload, {
+      await axios.put("http://localhost:9900/sms-mgmt/master-user/update", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -127,7 +127,7 @@ const UserManagement = () => {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const token = storedUser?.token;
 
-      await axios.delete(`https://simbeasiswauk.site:9900/sms-mgmt/master-user/delete?uuid=${uuid}`, {
+      await axios.delete(`http://localhost:9900/sms-mgmt/master-user/delete?uuid=${uuid}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

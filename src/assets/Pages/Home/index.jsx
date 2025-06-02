@@ -60,22 +60,13 @@ function Home() {
             <div className="row gy-4">
               <div className="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
                 <h1 data-aos="fade-up">
-                  System Information Scholarship Management
+                  Sistem Informasi Manajemen Beasiswa
                 </h1>
                 <p data-aos="fade-up" data-aos-delay={100}>
                   Universitas Klabat
                 </p>
-                <div
-                  className="d-flex flex-column flex-md-row"
-                  data-aos="fade-up"
-                  data-aos-delay={200}
-                >
-                  <a href="#about" className="btn-get-started">
-                    Get Started <i className="bi bi-arrow-right" />
-                  </a>
-                </div>
               </div>
-              <div
+            <div
                 className="col-lg-6 order-1 order-lg-2 hero-img"
                 data-aos="zoom-out"
               >
@@ -105,15 +96,6 @@ function Home() {
                   <p>
                     Sistem Informasi Manajemen Beasiswa adalah sistem berbasis teknologi yang dirancang untuk mengelola seluruh proses terkait beasiswa, mulai dari pendaftaran, seleksi, hingga pencairan dana dan pelaporan.
                   </p>
-                  <div className="text-center text-lg-start">
-                    <Link
-                      to="/about"
-                      className="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center"
-                    >
-                      <span>Read More</span>
-                      <i className="bi bi-arrow-right" />
-                    </Link>
-                  </div>
                 </div>
               </div>
               <div
@@ -131,13 +113,13 @@ function Home() {
         <section id="values" className="values section">
           <div className="container section-title" data-aos="fade-up">
             <p>
-              Beasiswa yang tersedia
+              Klik jenis beasiswa dibawah untuk masuk
             </p>
             <h2>Click for more Info <i class="bi bi-arrow-down"></i></h2>
           </div>
           <div className="card-container container">
             <div className="row gy-3 justify-content-center">
-              <Link to="/beasiswa/kip" className="col-lg-4" data-aos="fade-up" data-aos-delay={200}>
+              <Link to="/login" className="col-lg-4" data-aos="fade-up" data-aos-delay={200}>
                 <div className="card">
                   <img src={KIPLogo} className="img-fluid" alt="" />
                   <h3>Kartu Indonesia Pintar <br />(KIP) Kuliah</h3>
@@ -147,7 +129,7 @@ function Home() {
                 </div>
               </Link>
               {/* End Card Item */}
-              <Link className="col-lg-4" data-aos="fade-up" data-aos-delay={300} to="/beasiswa/genbi">
+              <Link className="col-lg-4" data-aos="fade-up" data-aos-delay={300} to="/login">
                 <div className="card">
                   <img src={LogoGenbi} className="img-fluid" alt="" />
                   <h3>Generasi Baru Indonesia <br /> (GenBI)</h3>
