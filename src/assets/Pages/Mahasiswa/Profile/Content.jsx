@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import apiClient from "../../../../api/apiClient";
 
 export default function Content() {
   const [userData, setUserData] = useState(null);
@@ -19,8 +19,8 @@ export default function Content() {
         }
 
         // Fetch user data
-        const userResponse = await axios.get(
-          `https://simbeasiswauk.site:9900/sms-mgmt/master-user/detail?uuid=${userUuid}`,
+        const userResponse = await apiClient.get(
+          `/master-user/detail?uuid=${userUuid}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -28,8 +28,8 @@ export default function Content() {
         setUserData(userResponse.data.output_schema.result);
 
         // Fetch scholarship data
-        const scholarshipResponse = await axios.get(
-          `https://simbeasiswauk.site:9900/sms-mgmt/scholarship/detail?userUuid=${userUuid}`,
+        const scholarshipResponse = await apiClient.get(
+          `/scholarship/detail?userUuid=${userUuid}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

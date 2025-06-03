@@ -12,7 +12,7 @@ import "../../../App.css";
 import { favicon, KIPLogo, LogoGenbi, ScholarshipLogo, ScholarshipBanner } from "../../img";
 import { Link } from "react-router-dom";
 import AnnouncementList from "./ListPengumuman";
-import axios from "axios";
+import apiClient from "../../../api/apiClient";
 
 
 
@@ -22,7 +22,7 @@ function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://simbeasiswauk.site:9900/sms-mgmt/announcement/list");
+        const response = await apiClient.get("/announcement/list");
         setAnnouncements(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("Gagal memuat pengumuman:", error);

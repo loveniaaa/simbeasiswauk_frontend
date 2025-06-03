@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { FilterBar } from "./FilterBar";
 import { StudentCard } from "./StudentCard";
 import axios from "axios";
+import apiClient from "../../../../api/apiClient";
 
 export const StudentList = () => {
   const [students, setStudents] = useState([]);
@@ -24,7 +25,7 @@ export const StudentList = () => {
           return;
         }
 
-        const response = await axios.get("https://simbeasiswauk.site:9900/sms-mgmt/scholarship/get", {
+        const response = await apiClient.get("/scholarship/get", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

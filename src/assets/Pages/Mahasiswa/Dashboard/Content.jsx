@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import apiClient from "../../../../api/apiClient";
 
 function DashboardContent() {
   const [fullName, setFullName] = useState("");
@@ -21,8 +21,8 @@ function DashboardContent() {
       if (!userUuid || !token) return;
 
       try {
-        const response = await axios.get(
-          `https://simbeasiswauk.site:9900/sms-mgmt/scholarship/detail?userUuid=${userUuid}`,
+        const response = await apiClient.get(
+          `/scholarship/detail?userUuid=${userUuid}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const scholarshipRecords = response.data.output_schema.result;

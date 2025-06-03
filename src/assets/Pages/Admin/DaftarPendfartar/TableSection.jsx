@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FilterSection } from "./FilterSection";
 import "./TableSection.css";
+import apiClient from "../../../../api/apiClient";
 
 function TableSection() {
   const [students, setStudents] = useState([]);
@@ -21,7 +22,7 @@ function TableSection() {
         const storedUser = JSON.parse(localStorage.getItem("user"));
         const token = storedUser?.token;
 
-        const response = await axios.get("https://simbeasiswauk.site:9900/sms-mgmt/scholarship/get", {
+        const response = await apiClient.get("/scholarship/get", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

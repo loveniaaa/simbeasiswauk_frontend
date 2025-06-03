@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import UserCard from "./UserCard";
+import apiClient from "../../../../../api/apiClient";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -35,7 +36,7 @@ const UserManagement = () => {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const token = storedUser?.token;
 
-      const response = await axios.get("http://localhost:9900/sms-mgmt/master-user/get", {
+      const response = await apiClient.get("/master-user/get", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -74,7 +75,7 @@ const UserManagement = () => {
         status: true,
       };
 
-      await axios.post("http://localhost:9900/sms-mgmt/master-user/create", payload, {
+      await apiClient.post("/master-user/create", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -107,7 +108,7 @@ const UserManagement = () => {
         role_id: "02",
       };
 
-      await axios.put("http://localhost:9900/sms-mgmt/master-user/update", payload, {
+      await apiClient.put("/master-user/update", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -127,7 +128,7 @@ const UserManagement = () => {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const token = storedUser?.token;
 
-      await axios.delete(`http://localhost:9900/sms-mgmt/master-user/delete?uuid=${uuid}`, {
+      await apiClient.delete(`/master-user/delete?uuid=${uuid}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
