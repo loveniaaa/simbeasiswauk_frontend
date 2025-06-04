@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import apiClient from "../../../../api/apiClient";
 
 function RegistrantTable() {
   const [registrants, setRegistrants] = useState([]);
@@ -17,7 +18,7 @@ function RegistrantTable() {
           return;
         }
 
-        const response = await axios.get("https://simbeasiswauk.site:9900/sms-mgmt/scholarship/get", {
+        const response = await apiClient.get("/scholarship/get", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

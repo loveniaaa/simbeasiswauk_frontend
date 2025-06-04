@@ -25,7 +25,7 @@ const CreatePassword = () => {
     }
 
     try {
-      const response = await fetch(`https://simbeasiswauk.site:9900/sms-mgmt/auth/create-new-password/${token}`, {
+      const response = await fetch(`http://localhost:9900/sms-mgmt/auth/create-new-password/${token}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

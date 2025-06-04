@@ -3,6 +3,7 @@ import DocumentUploadHeader from "./DocumentUploadHeader";
 import FileUploadField from "./UploadFileFields";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
+import apiClient from "../../../../../api/apiClient";
 
 const FormPendaftaranDocumentGenBI = () => {
   const [files, setFiles] = React.useState({});
@@ -40,7 +41,7 @@ const FormPendaftaranDocumentGenBI = () => {
         formData.append("category", category);
         formData.append("uploadedBy", uploadedBy); // Add UUID
 
-        await axios.post("https://simbeasiswauk.site:9900/sms-mgmt/document/upload", formData, {
+        await apiClient.post("/document/upload", formData, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },

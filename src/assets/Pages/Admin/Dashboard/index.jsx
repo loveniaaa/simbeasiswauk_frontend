@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import axios from 'axios';
 import "./dashboard-admin.css";
+import apiClient from '../../../../api/apiClient';
 
 const DashboardAdmin = () => {
   const [summary, setSummary] = useState({
@@ -23,7 +24,7 @@ const DashboardAdmin = () => {
           return;
         }
 
-        const response = await axios.get("https://simbeasiswauk.site:9900/sms-mgmt/scholarship/get", {
+        const response = await apiClient.get("/scholarship/get", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

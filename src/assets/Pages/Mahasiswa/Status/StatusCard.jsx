@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import StudentInfo from "./UserInfo";
+import apiClient from "../../../../api/apiClient";
 
 export function StatusCard() {
   const [student, setStudent] = useState(null);
@@ -19,7 +19,7 @@ export function StatusCard() {
           return;
         }
 
-        const response = await axios.get(`https://simbeasiswauk.site:9900/sms-mgmt/scholarship/detail?userUuid=${userUuid}`, {
+        const response = await apiClient.get(`/scholarship/detail?userUuid=${userUuid}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

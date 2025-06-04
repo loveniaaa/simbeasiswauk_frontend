@@ -3,6 +3,7 @@ import { RegistrationHeader } from "./RegistrationHeader";
 import { FormInput } from "./FormInput";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import apiClient from "../../../../../api/apiClient";
 
 function FormPendaftaranGenBI() {
   const [firstName, setFirstName] = useState("");
@@ -32,7 +33,7 @@ function FormPendaftaranGenBI() {
       if (!token) return;
 
       try {
-        const res = await axios.get("https://simbeasiswauk.site:9900/sms-mgmt/major/get", {
+        const res = await apiClient.get("/major/get", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -75,8 +76,8 @@ function FormPendaftaranGenBI() {
     }
 
     try {
-      const response = await axios.post(
-        "https://simbeasiswauk.site:9900/sms-mgmt/scholarship/create",
+      const response = await apiClient.post(
+        "/scholarship/create",
         requestBody,
         {
           headers: {
