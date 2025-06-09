@@ -46,12 +46,6 @@ export default function DocumentValidation() {
             newDocuments[docName] = matchedDoc;
             newVerifications[docName] = matchedDoc.isVerified ?? null;
             newNotes[docName] = matchedDoc.note || "";
-
-            if (matchedDoc.isVerified === true) {
-              await apiClient.patch(
-                `/document/verify?uuid=${matchedDoc.uuid}&isVerified=true&note=${encodeURIComponent(matchedDoc.note || "Auto verified")}`
-              );
-            }
           } else {
             newDocuments[docName] = null;
             newVerifications[docName] = null;
@@ -75,7 +69,7 @@ export default function DocumentValidation() {
         const response = await apiClient.get(`/scholarship/detail?userUuid=${uploadedBy}`);
         const result = response.data?.output_schema?.result;
         if (result?.uuid) {
-          setScholarshipUuid(result.uuid); // UUID beasiswa
+          setScholarshipUuid(result.uuid);
         }
       } catch (error) {
         console.error("Gagal mengambil data beasiswa:", error);
@@ -104,8 +98,20 @@ export default function DocumentValidation() {
       const isVerified = verifications[category];
       const note = notes[category] ?? "";
 
+      console.log("Verifikasi Submit:", {
+        uuid: document.uuid,
+        isVerified,
+        note,
+      });
+
       if (isVerified === null) return;
-      if (isVerified === false && !window.confirm(`Tolak dokumen "${category}"?`)) return;
+
+      const confirmMsg =
+        isVerified === true
+          ? `Validasi dokumen "${category}"?`
+          : `Tolak dokumen "${category}"?`;
+
+      if (!window.confirm(confirmMsg)) return;
 
       await apiClient.patch(
         `/document/verify?uuid=${document.uuid}&isVerified=${isVerified}&note=${encodeURIComponent(note)}`
@@ -115,6 +121,7 @@ export default function DocumentValidation() {
       alert(`Gagal memverifikasi dokumen "${category}".`);
     }
   };
+
 
   const handleDocumentCompletionStatus = async () => {
     try {
@@ -126,9 +133,11 @@ export default function DocumentValidation() {
       }
 
       if (isAllVerified) {
-        await apiClient.patch(`/document/completion-status?uploadedBy=${scholarshipUuid}&isComplete=true`);
+        await apiClient.patch(
+          `/document/completion-status?uploadedBy=${scholarshipUuid}&isComplete=true`
+        );
         alert("Dokumen lengkap dan status beasiswa telah diperbarui.");
-        navigate("/bidang/datapendaftar");
+        navigate(`/bidang/informasi-pendaftar/data-pendaftar/${uploadedBy}`);
       } else {
         alert("Dokumen belum lengkap atau belum tervalidasi.");
       }
@@ -139,8 +148,12 @@ export default function DocumentValidation() {
 
   const previewDocument = async (uuid) => {
     try {
-      const response = await apiClient.get(`/document/preview/${uuid}`, { responseType: "blob" });
-      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+      const response = await apiClient.get(`/document/preview/${uuid}`, {
+        responseType: "blob",
+      });
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
       window.open(URL.createObjectURL(blob), "_blank");
     } catch {
       alert("Gagal membuka dokumen.");
@@ -159,7 +172,13 @@ export default function DocumentValidation() {
             <div className="d-flex gap-2">
               <span>Status</span>
               <span>:</span>
-              <span className={allComplete && Object.values(verifications).every((v) => v === true) ? "text-success" : "text-danger"}>
+              <span
+                className={
+                  allComplete && Object.values(verifications).every((v) => v === true)
+                    ? "text-success"
+                    : "text-danger"
+                }
+              >
                 {allComplete && Object.values(verifications).every((v) => v === true)
                   ? "Dokumen Valid dan Lengkap"
                   : "Belum Valid atau Tidak Lengkap"}
@@ -184,9 +203,15 @@ export default function DocumentValidation() {
                     <span className="text-muted">Tidak ada File</span>
                   )}
 
-                  {verifications[doc] === true && <span className="badge bg-success">Valid</span>}
-                  {verifications[doc] === false && <span className="badge bg-danger">Tidak Valid</span>}
-                  {verifications[doc] === null && <span className="badge bg-secondary">Belum Dicek</span>}
+                  {verifications[doc] === true && (
+                    <span className="badge bg-success">Valid</span>
+                  )}
+                  {verifications[doc] === false && (
+                    <span className="badge bg-danger">Tidak Valid</span>
+                  )}
+                  {verifications[doc] === null && (
+                    <span className="badge bg-secondary">Belum Dicek</span>
+                  )}
                 </div>
 
                 {documents[doc] && (
@@ -204,13 +229,16 @@ export default function DocumentValidation() {
                       <input
                         type="checkbox"
                         checked={verifications[doc] === true}
-                        disabled={verifications[doc] === true}
-                        onChange={(e) => handleVerificationChange(doc, e.target.checked)}
+                        onChange={(e) => {
+                          const newValue = e.target.checked;
+                          console.log(`Checkbox "${doc}" diubah jadi:`, newValue);
+                          handleVerificationChange(doc, newValue);
+                        }}
                       />
+
                       <button
                         className="btn btn-sm btn-primary"
                         onClick={() => handleVerifySubmit(doc)}
-                        disabled={verifications[doc] === null || verifications[doc] === true}
                       >
                         Simpan Verifikasi
                       </button>

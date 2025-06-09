@@ -1,87 +1,129 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import AdminLayout from '../components/AdminLayout';
 import BeasiswaItem from '../components/BeasiswaItem';
-import { Link, useNavigate } from 'react-router-dom';
-import { KIPLogo, LogoGenbi } from '../../../img';
-
+import { Link } from 'react-router-dom';
+import apiClient from '../../../../api/apiClient';
 
 const ManajemenBeasiswa = () => {
-
-  const [beasiswaList, setBeasiswaList] = useState([
-          { id: 1, nama: 'GenBI', logo: {LogoGenbi} },
-          { id: 2, nama: 'KIP Kuliah', logo: {} }
-  ]);
-
+  const [beasiswaList, setBeasiswaList] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [newBeasiswa, setNewBeasiswa] = useState({ nama: '', logo: '' });
+  const [newBeasiswa, setNewBeasiswa] = useState({ scholarshipName: '', logo: '' });
 
-  const handleAddBeasiswa = () => {
-    setBeasiswaList([...beasiswaList, { id: Date.now(), ...newBeasiswa }]);
-    setShowModal(false);
-    setNewBeasiswa({ nama: '', logo: '' });
-  };
+  useEffect(() => {
+    const fetchBeasiswa = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const token = storedUser?.token;
 
-  const handleUpdate = (id) => {
-    alert(`Update beasiswa dengan ID: ${id}`);
-  };
+        const response = await apiClient.get('/scholarshipType/get', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-  const handleDelete = (id) => {
-    if (window.confirm('Apakah yakin ingin menghapus beasiswa ini?')) {
-      setBeasiswaList(beasiswaList.filter(b => b.id !== id));
+        const records = response.data.output_schema.records;
+        setBeasiswaList(records);
+      } catch (error) {
+        console.error('Gagal mengambil daftar beasiswa:', error);
+      }
+    };
+
+    fetchBeasiswa();
+  }, []);
+
+  const handleAddBeasiswa = async () => {
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      const token = storedUser?.token;
+
+      await apiClient.post('/scholarshipType/create', newBeasiswa, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setShowModal(false);
+      setNewBeasiswa({ scholarshipName: '', logo: '' });
+      window.location.reload();
+    } catch (error) {
+      console.error('Gagal menambahkan beasiswa:', error);
     }
   };
 
-  const handleDetail = (id) => {
-    alert(`Lihat detail beasiswa dengan ID: ${id}`);
+  const handleUpdate = (uuid) => {
+    alert(`Update beasiswa dengan UUID: ${uuid}`);
+  };
+
+  const handleDelete = async (uuid) => {
+    if (window.confirm('Apakah yakin ingin menghapus beasiswa ini?')) {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const token = storedUser?.token;
+
+        await apiClient.delete(`/scholarshipType/delete?uuid=${uuid}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setBeasiswaList(beasiswaList.filter(b => b.uuid !== uuid));
+      } catch (error) {
+        console.error('Gagal menghapus beasiswa:', error);
+      }
+    }
+  };
+
+  const handleDetail = (uuid) => {
+    alert(`Lihat detail beasiswa dengan UUID: ${uuid}`);
   };
 
   return (
     <AdminLayout>
       <div className="container mt-4">
         <h3>Daftar Beasiswa</h3>
-        <Link to="/bidang/informasi-beasiswa/add" className="mb-3" >Tambahkan Beasiswa +</Link>
+        <button className="btn btn-primary mb-3" onClick={() => setShowModal(true)}>
+          Tambah Beasiswa +
+        </button>
 
         {beasiswaList.map((beasiswa) => (
-            <BeasiswaItem
-            key={beasiswa.id}
-            beasiswa={beasiswa}
-            onUpdate={() => handleUpdate(beasiswa.id)}
-            onDelete={() => handleDelete(beasiswa.id)}
-            onDetail={() => handleDetail(beasiswa.id)}
-            />
+          <BeasiswaItem
+            key={beasiswa.uuid}
+            beasiswa={{
+              id: beasiswa.uuid,
+              nama: beasiswa.scholarshipName || 'Tanpa Nama',
+              logo: beasiswa.logo || ''
+            }}
+            onUpdate={() => handleUpdate(beasiswa.uuid)}
+            onDelete={() => handleDelete(beasiswa.uuid)}
+            onDetail={() => handleDetail(beasiswa.uuid)}
+          />
         ))}
 
         <Modal show={showModal} onHide={() => setShowModal(false)}>
-            <Modal.Header closeButton>
+          <Modal.Header closeButton>
             <Modal.Title>Tambah Beasiswa</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
+          </Modal.Header>
+          <Modal.Body>
             <Form>
-                <Form.Group className="mb-3">
+              <Form.Group className="mb-3">
                 <Form.Label>Nama Beasiswa</Form.Label>
                 <Form.Control
-                    type="text"
-                    value={newBeasiswa.nama}
-                    onChange={(e) => setNewBeasiswa({ ...newBeasiswa, nama: e.target.value })}
+                  type="text"
+                  value={newBeasiswa.scholarshipName}
+                  onChange={(e) => setNewBeasiswa({ ...newBeasiswa, scholarshipName: e.target.value })}
                 />
-                </Form.Group>
-                <Form.Group className="mb-3">
+              </Form.Group>
+              <Form.Group className="mb-3">
                 <Form.Label>Logo URL</Form.Label>
                 <Form.Control
-                    type="text"
-                    value={newBeasiswa.logo}
-                    onChange={(e) => setNewBeasiswa({ ...newBeasiswa, logo: e.target.value })}
+                  type="text"
+                  value={newBeasiswa.logo}
+                  onChange={(e) => setNewBeasiswa({ ...newBeasiswa, logo: e.target.value })}
                 />
-                </Form.Group>
+              </Form.Group>
             </Form>
-            </Modal.Body>
-            <Modal.Footer>
+          </Modal.Body>
+          <Modal.Footer>
             <Button variant="secondary" onClick={() => setShowModal(false)}>Batal</Button>
             <Button variant="primary" onClick={handleAddBeasiswa}>Tambah</Button>
-            </Modal.Footer>
+          </Modal.Footer>
         </Modal>
-        </div>
+      </div>
     </AdminLayout>
   );
 };

@@ -15,39 +15,56 @@ function FormPendaftaranGenBI() {
   const [highSchoolName, setHighSchoolName] = useState("");
   const [fatherName, setFatherName] = useState("");
   const [motherName, setMotherName] = useState("");
+
+  const [facultyCode, setFacultyCode] = useState(""); // ganti dari facultyId
   const [majorId, setMajorId] = useState("");
 
-  // ✅ Tambahkan state untuk daftar jurusan
+  const [faculties, setFaculties] = useState([]);
   const [majors, setMajors] = useState([]);
-  const [success, setSuccess] = useState(false); // State to track success
-  const [error, setError] = useState(""); // State for error handling
+  const [filteredMajors, setFilteredMajors] = useState([]);
+
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
-  // ✅ Ambil data jurusan dari backend
   useEffect(() => {
-    const fetchMajors = async () => {
+    const fetchFacultiesAndMajors = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
       const token = user?.token;
 
       if (!token) return;
 
       try {
-        const res = await apiClient.get("/major/get", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const [facultyRes, majorRes] = await Promise.all([
+          apiClient.get("/faculty/get", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          apiClient.get("/major/get", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-        const fetchedMajors = res.data.output_schema.records || [];
-        setMajors(fetchedMajors);
+        setFaculties(facultyRes.data.output_schema.records || []);
+        setMajors(majorRes.data.output_schema.records || []);
       } catch (error) {
-        console.error("Gagal mengambil data jurusan:", error);
+        console.error("Gagal mengambil data fakultas/major:", error);
       }
     };
 
-    fetchMajors();
+    fetchFacultiesAndMajors();
   }, []);
+
+  useEffect(() => {
+    if (facultyCode) {
+      const filtered = majors.filter((m) => m.facultyCode === facultyCode);
+      setFilteredMajors(filtered);
+    } else {
+      setFilteredMajors([]);
+    }
+    setMajorId("");
+  }, [facultyCode, majors]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,7 +75,7 @@ function FormPendaftaranGenBI() {
       first_name: firstName,
       last_name: lastName,
       nomor_registrasi: noRegistration,
-      scholarship_type: "GenBI", 
+      scholarship_type: "GenBI",
       address_line_1: addressLine1,
       address_line_2: addressLine2,
       high_school_name: highSchoolName,
@@ -86,19 +103,16 @@ function FormPendaftaranGenBI() {
           },
         }
       );
-    
-      // ✅ Simpan hasil ke localStorage
+
       localStorage.setItem("scholarship", JSON.stringify(response.data.output_schema.result));
-    
-      setSuccess(true); // Set success to true once submission is successful
-      setError(""); // Reset any error
+      setSuccess(true);
+      setError("");
     } catch (error) {
       console.error("Gagal mengirim data:", error.response?.data || error.message);
       setError("Gagal mengirim data!");
     }
   };
 
-  // If the form submission is successful, show a success notification
   if (success) {
     return (
       <div className="container d-flex justify-content-center align-items-center min-vh-100">
@@ -110,10 +124,7 @@ function FormPendaftaranGenBI() {
           <p className="text-muted">
             Data pendaftaran Anda telah berhasil disimpan. Klik tombol di bawah untuk melanjutkan ke tahap berikutnya.
           </p>
-          <button
-            className="btn btn-primary mt-3"
-            onClick={() => navigate("/beasiswa/genbi/form-pendaftaran/document")}
-          >
+          <button className="btn btn-primary mt-3" onClick={() => navigate("/beasiswa/genbi/form-pendaftaran/document")}>
             Lanjutkan ke Pendaftaran Dokumen
           </button>
         </div>
@@ -133,13 +144,28 @@ function FormPendaftaranGenBI() {
               <FormInput label="Nomor Regis" placeholder="type here" value={noRegistration} onChange={(e) => setNoRegistration(e.target.value)} />
 
               <FormInput
+                label="Fakultas"
+                placeholder="Select"
+                isSelect
+                value={facultyCode}
+                onChange={(e) => setFacultyCode(e.target.value)}
+                options={faculties}
+                optionLabel="facultyName"
+                optionValue="facultyCode"
+              />
+
+
+              <FormInput
                 label="Jurusan"
                 placeholder="Select"
                 isSelect
                 value={majorId}
                 onChange={(e) => setMajorId(e.target.value)}
-                options={majors}
+                options={filteredMajors}
+                optionLabel="majorName"
+                optionValue="uuid"
               />
+
 
               <FormInput label="Alamat" placeholder="Jl, desa, RT / RW" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} />
               <FormInput placeholder="Kecamatan, Kabupaten/Kota, Provinsi" value={addressLine2} onChange={(e) => setAddressLine2(e.target.value)} />
@@ -152,7 +178,7 @@ function FormPendaftaranGenBI() {
                 Next
               </button>
             </form>
-            {error && <div className="error-message">{error}</div>}
+            {error && <div className="error-message text-danger mt-3">{error}</div>}
           </div>
         </div>
       </div>

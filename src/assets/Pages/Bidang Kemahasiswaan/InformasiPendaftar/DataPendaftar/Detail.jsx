@@ -10,7 +10,6 @@ export const StudentDetailsAndParentInformation = () => {
   const [loading, setLoading] = useState(true);
   const [approvalStatus, setApprovalStatus] = useState("IN_PROGRESS");
   const [documentStatus, setDocumentStatus] = useState("Belum Lengkap");
-  //const [validationStatus, setValidationStatus] = useState("Perlu Validasi");
   const [autoRejectedReason, setAutoRejectedReason] = useState("");
   const [autoRejected, setAutoRejected] = useState(false);
   const [canApprove, setCanApprove] = useState(false);
@@ -19,42 +18,46 @@ export const StudentDetailsAndParentInformation = () => {
     try {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const token = storedUser?.token;
-  
-      if (!token || !uuid) {
-        console.error("Missing token or UUID.");
-        return;
-      }
-  
+
+      if (!token || !uuid) return;
+
       const response = await apiClient.get(`/scholarship/detail?userUuid=${uuid}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
       const studentData = response.data.output_schema.result;
       setStudent(studentData);
-  
+
       const docResponse = await apiClient.get(`/document/get?uploadedBy=${uuid}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
       const records = docResponse.data?.output_schema?.records || [];
       const passFoto = records.find(doc => doc.category === "Pass Foto");
       if (passFoto) {
-        setPhotoUrl(`https://simbeasiswauk.site:9900/sms-mgmt/document/preview?uuid=${passFoto.uuid}`);
+        setPhotoUrl(`http://localhost:9900/sms-mgmt/document/preview?uuid=${passFoto.uuid}`);
       }
-  
-      // Cek kelengkapan dokumen berdasarkan response backend
-      const documentCompletionStatus = studentData.document_completion_status; // Ambil nilai documentCompletionStatus dari API
+
+      const documentCompletionStatus = studentData.document_completion_status;
       setDocumentStatus(documentCompletionStatus ? "Lengkap" : "Belum Lengkap");
-  
-      // Tentukan apakah bisa menyetujui berdasarkan documentCompletionStatus
-      if (documentCompletionStatus) { // Jika true, dokumen sudah lengkap
-        setApprovalStatus("APPROVED");
-        setAutoRejected(false);
+
+      const scholarUuid = studentData.uuid;
+      if (documentCompletionStatus && ["IN_PROGRESS", "INTERVIEW"].includes(studentData.status)) {
+        if (studentData.status === "IN_PROGRESS") {
+          await apiClient.put(`/scholarship/interview?uuid=${scholarUuid}&isValid=true`, null, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        }
+        setApprovalStatus("INTERVIEW");
         setCanApprove(true);
-      } else {
+        setAutoRejected(false);
+      } else if (!documentCompletionStatus) {
         setApprovalStatus("IN_PROGRESS");
+        setCanApprove(false);
         setAutoRejected(true);
         setAutoRejectedReason("Menunggu validasi data atau kelengkapan dokumen.");
+      } else {
+        setApprovalStatus(studentData.status || "IN_PROGRESS");
+        setCanApprove(studentData.status === "INTERVIEW");
+        setAutoRejected(false);
       }
     } catch (error) {
       console.error("Error fetching student detail:", error);
@@ -62,10 +65,19 @@ export const StudentDetailsAndParentInformation = () => {
       setLoading(false);
     }
   }, [uuid]);
-  
+
+  useEffect(() => {
+    fetchStudentDetails();
+  }, [fetchStudentDetails]);
+
+  useEffect(() => {
+    if (student?.scholarship_status === "INTERVIEW" && documentStatus === "Lengkap") {
+      setCanApprove(true);
+    }
+  }, [student, approvalStatus, documentStatus]);
 
   const handleApprovalChange = async () => {
-    if (autoRejected || !canApprove) {
+    if (autoRejected || (approvalStatus === "APPROVED" && !canApprove)) {
       alert("Tidak dapat menyetujui karena data/dokumen belum lengkap atau valid.");
       return;
     }
@@ -73,23 +85,19 @@ export const StudentDetailsAndParentInformation = () => {
     try {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const token = storedUser?.token;
+      const scholarUuid = student?.uuid;
 
-      // Kirim permintaan untuk mengubah status approval
-      await apiClient.put(`/scholarship/approval?uuid=${uuid}&isApproved=true`, null, {
+      await apiClient.put(`/scholarship/approval?uuid=${scholarUuid}&isApproved=${approvalStatus === "APPROVED"}`, null, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       alert("Status pendaftaran berhasil diperbarui.");
-      fetchStudentDetails(); // Memperbarui data setelah perubahan status
+      await fetchStudentDetails();
     } catch (error) {
       console.error("Error changing approval status:", error);
       alert("Gagal mengubah status pendaftaran.");
     }
   };
-
-  useEffect(() => {
-    fetchStudentDetails();
-  }, [fetchStudentDetails]);
 
   if (loading) return <div className="text-center py-5">Loading detail mahasiswa...</div>;
   if (!student) return <div className="text-center py-5 text-danger">Data mahasiswa tidak ditemukan.</div>;
@@ -150,13 +158,21 @@ export const StudentDetailsAndParentInformation = () => {
             <div className="ms-4 mt-4">
               <select className="form-select mb-3" value={approvalStatus} onChange={(e) => setApprovalStatus(e.target.value)}>
                 <option value="">Pilih Status Approval</option>
-                <option value="APPROVED" disabled={!canApprove}>Setujui Pendaftaran</option>
+                <option value="APPROVED" disabled={!canApprove && approvalStatus !== "APPROVED"}>Setujui Pendaftaran</option>
                 <option value="REJECTED">Tolak Pendaftaran</option>
               </select>
 
-              <button className="btn btn-success fw-semibold px-5" onClick={handleApprovalChange} disabled={!approvalStatus}>
+              <button
+                className="btn btn-success fw-semibold px-5"
+                onClick={handleApprovalChange}
+                disabled={!approvalStatus || (approvalStatus === "APPROVED" && !canApprove) || approvalStatus === "IN_PROGRESS"}
+              >
                 Simpan Status
               </button>
+
+              <p className="mt-2 text-muted small">
+                Status: {approvalStatus}
+              </p>
             </div>
 
             {autoRejectedReason && (

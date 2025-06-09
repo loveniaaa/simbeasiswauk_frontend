@@ -55,7 +55,10 @@ import AnnouncementDetail from "./assets/Pages/Bidang Kemahasiswaan/Pengumuman/D
 import AnnouncementUpdate from "./assets/Pages/Bidang Kemahasiswaan/Pengumuman/Update/index.jsx";
 import AnnouncementDetailAdmin from "./assets/Pages/Admin/Pengumuman/Detail/index.jsx";
 import AnnouncementUpdateAdmin from "./assets/Pages/Admin/Pengumuman/Update/index.jsx";
-import ReplaceDocument from "./assets/Pages/Mahasiswa/Profile/Document/index.jsx";
+import Mendaftar from "./assets/Pages/Mahasiswa/Mendaftar/index.jsx";
+import DetailBeasiswaBidangKemahasiswaan from "./assets/Pages/Bidang Kemahasiswaan/InformasiBeasiswa/Detail/index.jsx";
+import UpdateBeasiswaBidangKemahasiswaan from "./assets/Pages/Bidang Kemahasiswaan/InformasiBeasiswa/Update/index.jsx";
+import ReplaceDocument from "./assets/Pages/Mahasiswa/Document/index.jsx";
 
 
 // Komponen Layout Wrapper
@@ -70,7 +73,8 @@ function Layout() {
     "/admin/pengumuman", "/admin/pengumuman/add", "/admin/dashboard", "/admin/manajemen-beasiswa", "/admin/manajemen-beasiswa/add",
     "/admin/daftar-pendaftar", "/admin/laporan-statistik", "/bidang/informasi-beasiswa", "/bidang/informasi-beasiswa/add",
     "/bidang/announcement", "/bidang/informasi-pendaftar", "/bidang/informasi-pendaftar/data-pendaftar/:uuid", 
-    "/bidang/informasi-pendaftar/data-pendaftar/validation-and-check", "/mahasiswa/dashboard", "/mahasiswa/profile", "/mahasiswa/change-password"
+    "/bidang/informasi-pendaftar/data-pendaftar/validation-and-check", "/mahasiswa/dashboard", "/mahasiswa/profile", "/mahasiswa/change-password", 
+    "/mahasiswa/mendaftar", "/bidang/informasi-beasiswa/detail/:uuid", "bidang/informasi-beasiswa/update/:uuid"
   ];
 
   // Check if the current path matches any of the paths in hideHeaderPaths or has dynamic uuid
@@ -102,12 +106,15 @@ function Layout() {
         <Route path="/bidang-dashboard" element={<DashboardBidangKemahasiswaan />} />
         <Route path="/bidang/informasi-beasiswa" element={<InformasiBeasiswa />} />
         <Route path="/bidang/informasi-beasiswa/add" element={<AddBeasiswaBK />} />
+        <Route path="/bidang/informasi-beasiswa/detail/:uuid" element={<DetailBeasiswaBidangKemahasiswaan />} />
+        <Route path="/bidang/informasi-beasiswa/update/:uuid" element={<UpdateBeasiswaBidangKemahasiswaan />} />
         <Route path="/bidang/announcement" element={<AnnouncementBK />} />
         <Route path="/bidang/announcement/detail/:uuid" element={<AnnouncementDetail />} />
         <Route path="/bidang/announcement/update/:uuid" element={<AnnouncementUpdate />} />
         <Route path="/bidang/informasi-pendaftar" element={<InformasiPendaftar />} />
         <Route path="/bidang/informasi-pendaftar/data-pendaftar/:uuid" element={<DataPendaftar />} />
         <Route path="/bidang/informasi-pendaftar/data-pendaftar/validation-and-check/:uploadedBy" element={<ValidasiAndCheck />} />
+
         <Route path="/admin/dashboard" element={<DashboardAdmin />} />
         <Route path="/admin/manajemen-beasiswa" element={<ManajemenBeasiswa />} />
         <Route path="/admin/manajemen-beasiswa/add" element={<AddBeasiswa />} />
@@ -121,11 +128,13 @@ function Layout() {
         <Route path="/admin/laporan-statistik" element={<LaporanStatistik />} />
         <Route path="/admin/manajemen-beasiswa/detail/:id" element={<BeasiswaDetail />} />
         <Route path="/admin/pengaturan" element={<PengaturanSistem />} />
+
         <Route path="/mahasiswa/dashboard" element={<Dashboard />} />
         <Route path="/mahasiswa/dokumen" element={<ReplaceDocument />} />
         <Route path="/mahasiswa/profile" element={<Profile />} />
         <Route path="/mahasiswa/status" element={<Status />} />
         <Route path="/mahasiswa/change-password" element={<ChangePassword />} />
+        <Route path="/mahasiswa/mendaftar" element={<Mendaftar />} />
       </Routes>
     </>
   );

@@ -20,6 +20,21 @@ function Sidebar() {
           <span className="ms-2 text-nowrap">Status Seleksi</span>
         </Link>
 
+        <Link to="/mahasiswa/dokumen" className="nav-link bg-white rounded-end py-2 px-3 mb-2">
+          <i className="bi bi-file-earmark-text"></i>
+          <span className="ms-2 text-nowrap">Dokumen</span>
+        </Link>
+
+        <Link to="/mahasiswa/mendaftar" className="nav-link bg-white rounded-end py-2 px-3 mb-2">
+          <i className="bi bi-file-earmark-text"></i>
+          <span className="ms-2 text-nowrap">Mendaftar</span>
+        </Link>
+
+        <Link to="/mahasiswa/profile" className="nav-link bg-white rounded-end py-2 px-3 mb-2">
+          <i className="bi bi-file-earmark-text"></i>
+          <span className="ms-2 text-nowrap">Profil</span>
+        </Link>
+
         <Link to="/mahasiswa/change-password" className="nav-link bg-white rounded-end py-2 px-3 mb-2">
           <i className="bi bi-file-earmark-text"></i>
           <span className="ms-2 text-nowrap">Change Password</span>

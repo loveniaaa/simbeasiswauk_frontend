@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import apiClient from "../../../../../api/apiClient";
+import { useNavigate } from "react-router-dom";
+import apiClient from "../../../../api/apiClient";
 
 const documentList = [
   "Pass Foto",
@@ -18,7 +18,6 @@ const documentList = [
 ];
 
 export default function ReplaceDocument() {
-  const { uploadedBy } = useParams();
   const navigate = useNavigate();
   const [documents, setDocuments] = useState({});
   const [selectedFiles, setSelectedFiles] = useState({});
@@ -26,61 +25,69 @@ export default function ReplaceDocument() {
   const [statusMessage, setStatusMessage] = useState("");
   const [success, setSuccess] = useState(false);
 
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const uploadedBy = storedUser?.user?.uuid;
+
   useEffect(() => {
+    if (!uploadedBy) {
+      navigate("/login");
+      return;
+    }
+
     const fetchDocuments = async () => {
-        try {
-            if (!uploadedBy) return;
-            const response = await apiClient.get(`/document/get?uploadedBy=${uploadedBy}`);
-            const uploadedDocs = response.data?.output_schema?.records || [];
+      try {
+        const response = await apiClient.get(`/document/get?uploadedBy=${uploadedBy}`);
+        const uploadedDocs = response.data?.output_schema?.records || [];
 
-            const docMap = {};
-            for (const docName of documentList) {
-            const found = uploadedDocs.find((d) => d.category === docName);
-            docMap[docName] = found || null;
-            }
-            setDocuments(docMap);
-        } catch (error) {
-            console.error("Gagal memuat dokumen:", error);
-        } finally {
-            setLoading(false);
+        const docMap = {};
+        for (const docName of documentList) {
+          const found = uploadedDocs.find(
+            (d) => d.category.toLowerCase() === docName.toLowerCase()
+          );
+          docMap[docName] = found || null;
         }
-    };
 
+        setDocuments(docMap);
+      } catch (error) {
+        console.error("Gagal memuat dokumen:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchDocuments();
   }, [uploadedBy]);
 
   const handleFileChange = (category, file) => {
     setSelectedFiles((prev) => ({ ...prev, [category]: file }));
-    };
+  };
 
-    const handleReplace = async (category) => {
+  const handleReplace = async (category) => {
     const file = selectedFiles[category];
     const existingDoc = documents[category];
     if (!file) return alert("Silakan pilih file terlebih dahulu.");
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("category", category); // ✅ kirim langsung
-    formData.append("uploadedBy", uploadedBy); // ✅ juga langsung, bukan dalam JSON
+    formData.append("category", category);
+    formData.append("uploadedBy", uploadedBy);
 
     try {
-        if (existingDoc) {
+      if (existingDoc) {
         await apiClient.put(`/document/update/${existingDoc.uuid}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
+          headers: { "Content-Type": "multipart/form-data" },
         });
-        } else {
+      } else {
         await apiClient.post(`/document/upload`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
+          headers: { "Content-Type": "multipart/form-data" },
         });
-        }
-        setSuccess(true);
+      }
+      setSuccess(true);
     } catch (error) {
-        console.error("Gagal mengganti/mengunggah dokumen:", error);
-        alert(`Gagal memperbarui dokumen "${category}".`);
+      console.error("Gagal mengganti/mengunggah dokumen:", error);
+      alert(`Gagal memperbarui dokumen "${category}".`);
     }
-    };
-
+  };
 
   const handlePreview = async (uuid) => {
     try {
@@ -122,23 +129,25 @@ export default function ReplaceDocument() {
       {statusMessage && <div className="alert alert-success">{statusMessage}</div>}
 
       <div className="table-responsive">
-        <table className="table align-middle mb-5">
+        <table className="table align-middle table-bordered shadow-sm">
           <thead className="table-light">
-            <tr>
+            <tr className="text-center">
               <th>No</th>
               <th>Jenis Dokumen</th>
               <th>Lihat</th>
               <th>Upload File Baru</th>
               <th>Aksi</th>
+              <th>Status Verifikasi</th>
+              <th>Catatan</th>
             </tr>
           </thead>
           <tbody>
             {documentList.map((doc, idx) => {
               const existing = documents[doc];
               return (
-                <tr key={idx}>
+                <tr key={idx} className="align-middle text-center">
                   <td>{idx + 1}</td>
-                  <td>{doc}</td>
+                  <td className="text-start">{doc}</td>
                   <td>
                     {existing ? (
                       <button className="btn btn-sm btn-outline-success" onClick={() => handlePreview(existing.uuid)}>Lihat</button>
@@ -161,6 +170,19 @@ export default function ReplaceDocument() {
                     >
                       {existing ? "Ganti" : "Upload"}
                     </button>
+                  </td>
+                  <td>
+                    {existing?.isVerified === true && <span className="badge bg-success">Valid</span>}
+                    {existing?.isVerified === false && <span className="badge bg-danger">Tidak Valid</span>}
+                    {existing?.isVerified === null && <span className="badge bg-secondary">Belum Dicek</span>}
+                    {!existing && <span className="text-muted">-</span>}
+                  </td>
+                  <td className="text-start">
+                    {existing?.note ? (
+                      <span>{existing.note}</span>
+                    ) : (
+                      <span className="text-muted">-</span>
+                    )}
                   </td>
                 </tr>
               );
