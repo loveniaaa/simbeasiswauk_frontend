@@ -1,21 +1,61 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./infokipkuliah.module.css";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { KIPLogo } from "../../img"; // pastikan logo diexport dengan benar
+import apiClient from "../../../api/apiClient";
 
 function InfoKIPKuliah() {
   const navigate = useNavigate();
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, user } = useContext(AuthContext);
+
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [scholarshipType, setScholarshipType] = useState("");
+  const [loadingStatus, setLoadingStatus] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  
+  useEffect(() => {
+    const fetchRegistrationDetail = async () => {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      if (!storedUser) return;
+
+      const userUuid = storedUser.user?.uuid;
+
+      if (isLoggedIn && userUuid) {
+          try {
+              const res = await apiClient.get(`/scholarship/detail?userUuid=${userUuid}`);
+              const detail = res.data?.output_schema?.result;
+
+              if (detail && Object.keys(detail).length > 0) {
+                  setIsRegistered(true);
+                  setScholarshipType(detail.scholarship_type || "");
+              }
+          } catch (error) {
+              console.error("Gagal memuat detail pendaftaran:", error);
+          } finally {
+              setLoadingStatus(false);
+          }
+      } else {
+          setLoadingStatus(false);
+      }
+  };
+
+  fetchRegistrationDetail();
+  }, [isLoggedIn, user]);
 
   const handleRegisterClick = () => {
     if (isLoggedIn) {
-      navigate("/beasiswa/kip/form-pendaftaran");
+        if (!isRegistered) {
+            navigate("/beasiswa/genbi/form-pendaftaran");
+        } else {
+            setShowModal(true); // tampilkan modal jika sudah terdaftar
+        }
     } else {
-      console.error("User is not logged in. Redirecting to login page.");
-      navigate("/login");
+        navigate("/login");
     }
   };
+
+  const closeModal = () => setShowModal(false);
 
   return (
     <div className={styles.container}>
@@ -35,6 +75,22 @@ function InfoKIPKuliah() {
               >
                 Daftar
               </button>
+
+              {/* Modal */}
+              {showModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <p>
+                            Anda sudah terdaftar pada Beasiswa <strong>{scholarshipType}</strong>.
+                        </p>
+                        <p>Anda tidak dapat mendaftar beasiswa lain.</p>
+                        <button onClick={closeModal} className={styles.closeButton}>
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+              )}
+
             </div>
           </div>
         </section>

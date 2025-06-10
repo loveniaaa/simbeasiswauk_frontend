@@ -11,6 +11,8 @@ export const FormInput = ({
   onChange,
   readOnly = false,
   options = [],
+  optionLabel = "majorName",  // default label
+  optionValue = "uuid",       // default value
 }) => {
   return (
     <div className={`form-group mb-4 ${className}`}>
@@ -24,8 +26,8 @@ export const FormInput = ({
         >
           <option value="">{placeholder}</option>
           {options.map((option) => (
-            <option key={option.uuid} value={option.uuid}>
-              {option.majorName}
+            <option key={option[optionValue]} value={option[optionValue]}>
+              {option[optionLabel]}
             </option>
           ))}
         </select>
